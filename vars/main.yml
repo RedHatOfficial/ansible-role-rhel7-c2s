@@ -1,6 +1,6 @@
 login_banner_text: --[\s\n]+WARNING[\s\n]+--[\s\n]*This[\s\n]+system[\s\n]+is[\s\n]+for[\s\n]+the[\s\n]+use[\s\n]+of[\s\n]+authorized[\s\n]+users[\s\n]+only.[\s\n]+Individuals[\s\n]*using[\s\n]+this[\s\n]+computer[\s\n]+system[\s\n]+without[\s\n]+authority[\s\n]+or[\s\n]+in[\s\n]+excess[\s\n]+of[\s\n]+their[\s\n]*authority[\s\n]+are[\s\n]+subject[\s\n]+to[\s\n]+having[\s\n]+all[\s\n]+their[\s\n]+activities[\s\n]+on[\s\n]+this[\s\n]+system[\s\n]*monitored[\s\n]+and[\s\n]+recorded[\s\n]+by[\s\n]+system[\s\n]+personnel.[\s\n]+Anyone[\s\n]+using[\s\n]+this[\s\n]*system[\s\n]+expressly[\s\n]+consents[\s\n]+to[\s\n]+such[\s\n]+monitoring[\s\n]+and[\s\n]+is[\s\n]+advised[\s\n]+that[\s\n]*if[\s\n]+such[\s\n]+monitoring[\s\n]+reveals[\s\n]+possible[\s\n]+evidence[\s\n]+of[\s\n]+criminal[\s\n]+activity[\s\n]*system[\s\n]+personal[\s\n]+may[\s\n]+provide[\s\n]+the[\s\n]+evidence[\s\n]+of[\s\n]+such[\s\n]+monitoring[\s\n]+to[\s\n]+law[\s\n]*enforcement[\s\n]+officials.
 rsyslog_remote_loghost_address: logcollector
-sshd_idle_timeout_value: 300
+sshd_idle_timeout_value: 7200
 sysctl_net_ipv4_conf_all_accept_redirects_value: 0
 sysctl_net_ipv4_conf_all_accept_source_route_value: 0
 sysctl_net_ipv4_conf_all_log_martians_value: 1
@@ -23,7 +23,7 @@ var_accounts_maximum_age_login_defs: 90
 var_accounts_minimum_age_login_defs: 7
 var_accounts_password_warn_age_login_defs: 7
 var_accounts_passwords_pam_faillock_deny: 5
-var_accounts_passwords_pam_faillock_fail_interval: 900
+var_accounts_passwords_pam_faillock_fail_interval: 100000000
 var_accounts_passwords_pam_faillock_unlock_time: 900
 var_auditd_action_mail_acct: root
 var_auditd_admin_space_left_action: single
@@ -32,8 +32,9 @@ var_auditd_max_log_file_action: rotate
 var_password_pam_dcredit: -1
 var_password_pam_lcredit: -1
 var_password_pam_minlen: 14
-var_password_pam_retry: 3
+var_password_pam_retry: 1
 var_password_pam_ucredit: -1
 var_password_pam_unix_remember: 5
+var_removable_partition: /dev/cdrom
 var_selinux_policy_name: targeted
 var_selinux_state: enforcing
