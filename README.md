@@ -16,9 +16,8 @@ there is no representation or claim that the C2S profile will
 ensure a system is in compliance or consistency with the CIS  
 baseline.  
   
-  
 Benchmark ID:  RHEL-7  
-Benchmark Version:  0.1.38  
+Benchmark Version:  0.1.39  
   
 XCCDF Version:  1.1  
   
