@@ -1,6 +1,10 @@
 C2S for Red Hat Enterprise Linux 7
 =========
 
+[![Build Status](https://travis-ci.org/RedHatOfficial/ansible-rhel7-c2s-role.svg?branch=master)](https://travis-ci.org/RedHatOfficial/ansible-rhel7-c2s-role)
+[![Ansible Role](https://img.shields.io/ansible/role/26062.svg)](https://galaxy.ansible.com/RedHatOfficial/rhel7-c2s-role)
+[![GitHub release](https://img.shields.io/github/release/RedHatOfficial/ansible-rhel7-c2s-role.svg)](https://github.com/RedHatOfficial/ansible-rhel7-c2s-role/releases/latest)
+
 Ansible remediation role for profile C2S  
 Profile Title:  C2S for Red Hat Enterprise Linux 7  
 Profile Description:  
