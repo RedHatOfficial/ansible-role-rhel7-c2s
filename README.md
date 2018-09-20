@@ -52,13 +52,13 @@ N/A
 Example Playbook
 ----------------
 
-Run `ansible-galaxy install Ansible-Security-Compliance.rhel7-role-C2S` to
+Run `ansible-galaxy install RedHatOfficial.rhel7-role-C2S` to
 download and install the role. Then you can use the following playbook snippet.
 
 
     - hosts: all
       roles:
-         - { role: Ansible-Security-Compliance.rhel7-role-C2S }
+         - { role: RedHatOfficial.rhel7-role-C2S }
 
 
 Then first check the playbook using (on the localhost):
