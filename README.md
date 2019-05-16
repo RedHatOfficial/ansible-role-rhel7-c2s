@@ -1,7 +1,7 @@
 # C2S for Red Hat Enterprise Linux 7
 
 [![Build Status](https://travis-ci.org/RedHatOfficial/ansible-role-rhel7-c2s.svg?branch=master)](https://travis-ci.org/RedHatOfficial/ansible-role-rhel7-c2s)
-[![Ansible Role](https://img.shields.io/ansible/role/29989.svg)](https://galaxy.ansible.com/RedHatOfficial/rhel7_c2s)
+[![Ansible Role](https://img.shields.io/ansible/role/39708.svg)](https://galaxy.ansible.com/RedHatOfficial/rhel7_c2s)
 [![GitHub release](https://img.shields.io/github/release/RedHatOfficial/ansible-role-rhel7-c2s.svg)](https://github.com/RedHatOfficial/ansible-role-rhel7-c2s/releases/latest)
 
 Ansible Role for C2S for Red Hat Enterprise Linux 7
