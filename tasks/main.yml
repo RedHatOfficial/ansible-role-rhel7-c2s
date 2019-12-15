@@ -1,3 +1,4 @@
+---
 - name: Check existence of yum on Fedora
   stat:
     path: /etc/yum.conf
@@ -1190,33 +1191,14 @@
   - CCE-82025-8
   - NIST-800-53-AC-6
 
-- name: Unit Service Exists - autofs.service
-  command: systemctl list-unit-files autofs.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_autofs_disabled | bool
-  - medium_severity | bool
-  - low_disruption | bool
-  - low_complexity | bool
+# Gather facts about all installer services
+# This must always run as there are too many
+# service combinations to tag them all
+- name: Populate Service Facts
+  service_facts:
   tags:
-  - service_autofs_disabled
-  - medium_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27498-5
-  - NIST-800-53-AC-19(a)
-  - NIST-800-53-AC-19(d)
-  - NIST-800-53-AC-19(e)
-  - NIST-800-53-IA-3
-  - NIST-800-171-3.4.6
-  - DISA-STIG-RHEL-07-020110
+  - all
+  - always
 
 - name: Disable service autofs
   systemd:
@@ -1225,35 +1207,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"autofs.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_autofs_disabled | bool
-  - medium_severity | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_autofs_disabled
-  - medium_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27498-5
-  - NIST-800-53-AC-19(a)
-  - NIST-800-53-AC-19(d)
-  - NIST-800-53-AC-19(e)
-  - NIST-800-53-IA-3
-  - NIST-800-171-3.4.6
-  - DISA-STIG-RHEL-07-020110
-
-- name: Unit Socket Exists - autofs.socket
-  command: systemctl list-unit-files autofs.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["autofs.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - no_reboot_needed | bool
@@ -1283,7 +1237,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"autofs.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["autofs.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - no_reboot_needed | bool
@@ -12447,28 +12401,6 @@
   - NIST-800-53-AC-6(7)
   - NIST-800-171-3.4.5
 
-- name: Unit Service Exists - avahi-daemon.service
-  command: systemctl list-unit-files avahi-daemon.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - low_disruption | bool
-  - no_reboot_needed | bool
-  - low_complexity | bool
-  tags:
-  - service_avahi-daemon_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80338-7
-  - NIST-800-53-CM-7
-
 - name: Disable service avahi-daemon
   systemd:
     name: avahi-daemon.service
@@ -12476,29 +12408,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"avahi-daemon.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - low_disruption | bool
-  - no_reboot_needed | bool
-  - low_complexity | bool
-  tags:
-  - service_avahi-daemon_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80338-7
-  - NIST-800-53-CM-7
-
-- name: Unit Socket Exists - avahi-daemon.socket
-  command: systemctl list-unit-files avahi-daemon.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["avahi-daemon.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -12522,7 +12432,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"avahi-daemon.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["avahi-daemon.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -12565,30 +12475,6 @@
   - CCE-80289-2
   - NIST-800-53-CM-7
 
-- name: Unit Service Exists - rhnsd.service
-  command: systemctl list-unit-files rhnsd.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_rhnsd_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_rhnsd_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80269-4
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-
 - name: Disable service rhnsd
   systemd:
     name: rhnsd.service
@@ -12596,31 +12482,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"rhnsd.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_rhnsd_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_rhnsd_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80269-4
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-
-- name: Unit Socket Exists - rhnsd.socket
-  command: systemctl list-unit-files rhnsd.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["rhnsd.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -12646,7 +12508,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"rhnsd.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["rhnsd.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -12665,29 +12527,6 @@
   - NIST-800-53-AC-17(8)
   - NIST-800-53-CM-7
 
-- name: Unit Service Exists - named.service
-  command: systemctl list-unit-files named.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_named_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_named_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80325-4
-  - NIST-800-53-CM-7
-
 - name: Disable service named
   systemd:
     name: named.service
@@ -12695,30 +12534,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"named.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_named_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_named_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80325-4
-  - NIST-800-53-CM-7
-
-- name: Unit Socket Exists - named.socket
-  command: systemctl list-unit-files named.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["named.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -12743,7 +12559,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"named.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["named.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -12761,29 +12577,6 @@
   - CCE-80325-4
   - NIST-800-53-CM-7
 
-- name: Unit Service Exists - vsftpd.service
-  command: systemctl list-unit-files vsftpd.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - service_vsftpd_disabled | bool
-  - no_reboot_needed | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_vsftpd_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80244-7
-  - NIST-800-53-CM-7
-
 - name: Disable service vsftpd
   systemd:
     name: vsftpd.service
@@ -12791,30 +12584,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"vsftpd.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - service_vsftpd_disabled | bool
-  - no_reboot_needed | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_vsftpd_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80244-7
-  - NIST-800-53-CM-7
-
-- name: Unit Socket Exists - vsftpd.socket
-  command: systemctl list-unit-files vsftpd.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["vsftpd.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -12839,7 +12609,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"vsftpd.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["vsftpd.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -13535,31 +13305,6 @@
   - CCE-27361-5
   - NIST-800-53-CM-6(b)
 
-- name: Unit Service Exists - xinetd.service
-  command: systemctl list-unit-files xinetd.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - medium_severity | bool
-  - service_xinetd_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_xinetd_disabled
-  - medium_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27443-1
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-  - NIST-800-171-3.4.7
-
 - name: Disable service xinetd
   systemd:
     name: xinetd.service
@@ -13567,32 +13312,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"xinetd.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - medium_severity | bool
-  - service_xinetd_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_xinetd_disabled
-  - medium_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27443-1
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-  - NIST-800-171-3.4.7
-
-- name: Unit Socket Exists - xinetd.socket
-  command: systemctl list-unit-files xinetd.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["xinetd.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - no_reboot_needed | bool
@@ -13619,6 +13339,7 @@
     state: stopped
     masked: 'yes'
   when:
+  - ansible_facts.services["xinetd.socket"] is defined
   - '"xinetd.socket" in socket_file_exists.stdout_lines[1]'
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
@@ -13660,33 +13381,6 @@
   - low_disruption | bool
   - low_complexity | bool
 
-- name: Unit Service Exists - telnet.service
-  command: systemctl list-unit-files telnet.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - service_telnet_disabled | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - high_severity | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_telnet_disabled
-  - high_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27401-9
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-  - NIST-800-53-IA-5(1)(c)
-  - NIST-800-171-3.1.13
-  - NIST-800-171-3.4.7
-
 - name: Disable service telnet
   systemd:
     name: telnet.service
@@ -13694,34 +13388,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"telnet.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - service_telnet_disabled | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - high_severity | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_telnet_disabled
-  - high_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27401-9
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-  - NIST-800-53-IA-5(1)(c)
-  - NIST-800-171-3.1.13
-  - NIST-800-171-3.4.7
-
-- name: Unit Socket Exists - telnet.socket
-  command: systemctl list-unit-files telnet.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["telnet.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - service_telnet_disabled | bool
   - disable_strategy | bool
@@ -13750,6 +13417,7 @@
     state: stopped
     masked: 'yes'
   when:
+  - ansible_facts.services["telnet.docket"] is defined
   - '"telnet.socket" in socket_file_exists.stdout_lines[1]'
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - service_telnet_disabled | bool
@@ -13793,33 +13461,6 @@
   - low_disruption | bool
   - low_complexity | bool
 
-- name: Unit Service Exists - rlogin.service
-  command: systemctl list-unit-files rlogin.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - service_rlogin_disabled | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - high_severity | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_rlogin_disabled
-  - high_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27336-7
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-  - NIST-800-53-IA-5(1)(c)
-  - NIST-800-171-3.1.13
-  - NIST-800-171-3.4.7
-
 - name: Disable service rlogin
   systemd:
     name: rlogin.service
@@ -13827,34 +13468,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"rlogin.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - service_rlogin_disabled | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - high_severity | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_rlogin_disabled
-  - high_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27336-7
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-  - NIST-800-53-IA-5(1)(c)
-  - NIST-800-171-3.1.13
-  - NIST-800-171-3.4.7
-
-- name: Unit Socket Exists - rlogin.socket
-  command: systemctl list-unit-files rlogin.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["rlogin.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - service_rlogin_disabled | bool
   - disable_strategy | bool
@@ -13883,6 +13497,7 @@
     state: stopped
     masked: 'yes'
   when:
+  - ansible_facts.services["rlogin.socket"] is defined
   - '"rlogin.socket" in socket_file_exists.stdout_lines[1]'
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - service_rlogin_disabled | bool
@@ -13905,33 +13520,6 @@
   - NIST-800-171-3.1.13
   - NIST-800-171-3.4.7
 
-- name: Unit Service Exists - rsh.service
-  command: systemctl list-unit-files rsh.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - high_severity | bool
-  - service_rsh_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_rsh_disabled
-  - high_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27337-5
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-  - NIST-800-53-IA-5(1)(c)
-  - NIST-800-171-3.1.13
-  - NIST-800-171-3.4.7
-
 - name: Disable service rsh
   systemd:
     name: rsh.service
@@ -13939,34 +13527,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"rsh.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - high_severity | bool
-  - service_rsh_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_rsh_disabled
-  - high_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27337-5
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-  - NIST-800-53-IA-5(1)(c)
-  - NIST-800-171-3.1.13
-  - NIST-800-171-3.4.7
-
-- name: Unit Socket Exists - rsh.socket
-  command: systemctl list-unit-files rsh.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["rsh.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - no_reboot_needed | bool
@@ -13995,7 +13556,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"rsh.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["rsh.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - no_reboot_needed | bool
@@ -14017,32 +13578,6 @@
   - NIST-800-171-3.1.13
   - NIST-800-171-3.4.7
 
-- name: Unit Service Exists - rexec.service
-  command: systemctl list-unit-files rexec.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_rexec_disabled | bool
-  - high_severity | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_rexec_disabled
-  - high_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27408-4
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-  - NIST-800-171-3.1.13
-  - NIST-800-171-3.4.7
-
 - name: Disable service rexec
   systemd:
     name: rexec.service
@@ -14050,33 +13585,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"rexec.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_rexec_disabled | bool
-  - high_severity | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_rexec_disabled
-  - high_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-27408-4
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-  - NIST-800-171-3.1.13
-  - NIST-800-171-3.4.7
-
-- name: Unit Socket Exists - rexec.socket
-  command: systemctl list-unit-files rexec.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["rexec.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - no_reboot_needed | bool
@@ -14104,7 +13613,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"rexec.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["rexec.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - no_reboot_needed | bool
@@ -14239,30 +13748,6 @@
   - package_ypbind_removed | bool
   - low_complexity | bool
 
-- name: Unit Service Exists - tftp.service
-  command: systemctl list-unit-files tftp.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - service_tftp_disabled | bool
-  - medium_severity | bool
-  - no_reboot_needed | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_tftp_disabled
-  - medium_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80212-4
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-
 - name: Disable service tftp
   systemd:
     name: tftp.service
@@ -14270,31 +13755,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"tftp.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - service_tftp_disabled | bool
-  - medium_severity | bool
-  - no_reboot_needed | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_tftp_disabled
-  - medium_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80212-4
-  - NIST-800-53-AC-17(8)
-  - NIST-800-53-CM-7
-
-- name: Unit Socket Exists - tftp.socket
-  command: systemctl list-unit-files tftp.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["tftp.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - service_tftp_disabled | bool
@@ -14320,7 +13781,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"tftp.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["tftp.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - service_tftp_disabled | bool
@@ -14360,28 +13821,6 @@
   - low_disruption | bool
   - low_complexity | bool
 
-- name: Unit Service Exists - dovecot.service
-  command: systemctl list-unit-files dovecot.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - service_dovecot_disabled | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_dovecot_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80294-2
-
 - name: Disable service dovecot
   systemd:
     name: dovecot.service
@@ -14389,29 +13828,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"dovecot.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - service_dovecot_disabled | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_dovecot_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80294-2
-
-- name: Unit Socket Exists - dovecot.socket
-  command: systemctl list-unit-files dovecot.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["dovecot.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - service_dovecot_disabled | bool
@@ -14435,7 +13852,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"dovecot.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["dovecot.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - service_dovecot_disabled | bool
@@ -15328,29 +14745,6 @@
   - NIST-800-53-AC-6
   - NIST-800-53-AC-17
 
-- name: Unit Service Exists - dhcpd.service
-  command: systemctl list-unit-files dhcpd.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - medium_severity | bool
-  - service_dhcpd_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_dhcpd_disabled
-  - medium_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80330-4
-  - NIST-800-53-CM-7
-
 - name: Disable service dhcpd
   systemd:
     name: dhcpd.service
@@ -15358,30 +14752,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"dhcpd.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - medium_severity | bool
-  - service_dhcpd_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_dhcpd_disabled
-  - medium_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80330-4
-  - NIST-800-53-CM-7
-
-- name: Unit Socket Exists - dhcpd.socket
-  command: systemctl list-unit-files dhcpd.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["dhcpd.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - no_reboot_needed | bool
@@ -15406,7 +14777,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"dhcpd.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["dhcpd.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - disable_strategy | bool
   - no_reboot_needed | bool
@@ -15424,28 +14795,6 @@
   - CCE-80330-4
   - NIST-800-53-CM-7
 
-- name: Unit Service Exists - squid.service
-  command: systemctl list-unit-files squid.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_squid_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_squid_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80285-0
-
 - name: Disable service squid
   systemd:
     name: squid.service
@@ -15453,29 +14802,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"squid.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_squid_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_squid_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80285-0
-
-- name: Unit Socket Exists - squid.socket
-  command: systemctl list-unit-files squid.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["squid.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -15499,7 +14826,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"squid.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["squid.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -15516,28 +14843,6 @@
   - no_reboot_needed
   - CCE-80285-0
 
-- name: Unit Service Exists - smb.service
-  command: systemctl list-unit-files smb.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - service_smb_disabled | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_smb_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80277-7
-
 - name: Disable service smb
   systemd:
     name: smb.service
@@ -15545,29 +14850,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"smb.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - service_smb_disabled | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_smb_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80277-7
-
-- name: Unit Socket Exists - smb.socket
-  command: systemctl list-unit-files smb.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["smb.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - service_smb_disabled | bool
@@ -15591,7 +14874,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"smb.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["smb.docket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - service_smb_disabled | bool
@@ -15608,28 +14891,6 @@
   - no_reboot_needed
   - CCE-80277-7
 
-- name: Unit Service Exists - rpcbind.service
-  command: systemctl list-unit-files rpcbind.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_rpcbind_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_rpcbind_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80230-6
-
 - name: Disable service rpcbind
   systemd:
     name: rpcbind.service
@@ -15637,29 +14898,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"rpcbind.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_rpcbind_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_rpcbind_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80230-6
-
-- name: Unit Socket Exists - rpcbind.socket
-  command: systemctl list-unit-files rpcbind.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["rpcbind.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -15683,7 +14922,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"rpcbind.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["rpc.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -15700,29 +14939,6 @@
   - no_reboot_needed
   - CCE-80230-6
 
-- name: Unit Service Exists - nfs.service
-  command: systemctl list-unit-files nfs.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_nfs_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_nfs_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80237-1
-  - NIST-800-53-AC-3
-
 - name: Disable service nfs
   systemd:
     name: nfs.service
@@ -15730,30 +14946,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"nfs.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_nfs_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_nfs_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80237-1
-  - NIST-800-53-AC-3
-
-- name: Unit Socket Exists - nfs.socket
-  command: systemctl list-unit-files nfs.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["nfs.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -15778,7 +14971,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"nfs.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["nfs.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -15796,28 +14989,6 @@
   - CCE-80237-1
   - NIST-800-53-AC-3
 
-- name: Unit Service Exists - snmpd.service
-  command: systemctl list-unit-files snmpd.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_snmpd_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_snmpd_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80274-4
-
 - name: Disable service snmpd
   systemd:
     name: snmpd.service
@@ -15825,29 +14996,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"snmpd.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_snmpd_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_snmpd_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80274-4
-
-- name: Unit Socket Exists - snmpd.socket
-  command: systemctl list-unit-files snmpd.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["snmpd.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -15871,7 +15020,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"snmpd.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["snmpd.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -15888,29 +15037,6 @@
   - no_reboot_needed
   - CCE-80274-4
 
-- name: Unit Service Exists - cups.service
-  command: systemctl list-unit-files cups.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_cups_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_cups_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80282-7
-  - NIST-800-53-CM-7
-
 - name: Disable service cups
   systemd:
     name: cups.service
@@ -15918,30 +15044,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"cups.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - no_reboot_needed | bool
-  - service_cups_disabled | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_cups_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80282-7
-  - NIST-800-53-CM-7
-
-- name: Unit Socket Exists - cups.socket
-  command: systemctl list-unit-files cups.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["cups.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -15966,7 +15069,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"cups.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["cups.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -15984,29 +15087,6 @@
   - CCE-80282-7
   - NIST-800-53-CM-7
 
-- name: Unit Service Exists - httpd.service
-  command: systemctl list-unit-files httpd.service
-  register: service_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - service_httpd_disabled | bool
-  - no_reboot_needed | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_httpd_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80300-7
-  - NIST-800-53-CM-7
-
 - name: Disable service httpd
   systemd:
     name: httpd.service
@@ -16014,30 +15094,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"httpd.service" in service_file_exists.stdout_lines[1]'
-  - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
-  - unknown_severity | bool
-  - disable_strategy | bool
-  - service_httpd_disabled | bool
-  - no_reboot_needed | bool
-  - low_disruption | bool
-  - low_complexity | bool
-  tags:
-  - service_httpd_disabled
-  - unknown_severity
-  - disable_strategy
-  - low_complexity
-  - low_disruption
-  - no_reboot_needed
-  - CCE-80300-7
-  - NIST-800-53-CM-7
-
-- name: Unit Socket Exists - httpd.socket
-  command: systemctl list-unit-files httpd.socket
-  register: socket_file_exists
-  changed_when: false
-  ignore_errors: true
-  when:
+  - ansible_facts.services["httpd.service"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
@@ -16062,7 +15119,7 @@
     state: stopped
     masked: 'yes'
   when:
-  - '"httpd.socket" in socket_file_exists.stdout_lines[1]'
+  - ansible_facts.services["httpd.socket"] is defined
   - ansible_virtualization_role != "guest" or ansible_virtualization_type != "docker"
   - unknown_severity | bool
   - disable_strategy | bool
