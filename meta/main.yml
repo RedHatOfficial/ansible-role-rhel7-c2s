@@ -1,5 +1,6 @@
 galaxy_info:
   role_name: rhel7_c2s
+  namespace: redhatofficial
   author: ComplianceAsCode development team
   description: C2S for Red Hat Enterprise Linux 7
   company: "Red Hat, Inc."
